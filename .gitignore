@@ -327,3 +327,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Google Drive Sync
+.tmp.driveupload
