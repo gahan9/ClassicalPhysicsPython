@@ -27,6 +27,11 @@ __author__ = "Gahan Saraiya"
 import numpy
 
 
+def has_values(*args):
+    """Check if any value is None or not, return False if any one value of *args is None"""
+    return all(i is not None for i in args)
+
+
 class LinearMotion(object):
     """Linear Motion is also considered as 1-D Kinematics
 
@@ -61,7 +66,8 @@ class LinearMotion(object):
         also, Δx = ∫ v dt  (area under velocity ᵥₛ time)
         :return: average velocity
         """
-        return (final_location - initial_location) / (final_time - initial_time)
+        if has_values(initial_location, initial_time, final_location, final_time):
+            return (final_location - initial_location) / (final_time - initial_time)
 
     @staticmethod
     def acceleration(initial_velocity, initial_time, final_velocity, final_time):
@@ -88,11 +94,11 @@ class LinearMotion(object):
         """
         initial_location = kwargs.get("initial_location", None)
         average_velocity = kwargs.get("average_velocity", None)
-        if initial_location and average_velocity:
+        if has_values(initial_location, average_velocity):
             return initial_location / (average_velocity * elapsed_time)
 
         initial_velocity = kwargs.get("initial_velocity", None)
         constant_acceleration = kwargs.get("constant_acceleration", None)
-        if constant_acceleration and initial_velocity and initial_location:
+        if has_values(constant_acceleration, initial_velocity, initial_location):
             return ((1 / 2 * constant_acceleration * (elapsed_time ** 2)) + (
                         initial_velocity * elapsed_time) + initial_location)
