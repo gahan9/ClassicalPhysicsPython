@@ -1,0 +1,84 @@
+"""
+This file is created to demonstrate the various Classical Mechanics
+Kinematics calculations, concept and formulas.
+
+
+Convention:
+
+Δ = Delta = change = (final - initial)
+x = distance = displacement
+v = velocity
+a = acceleration
+t = time
+
+Frequent use math characters:
+αβγεδθπμλωψφϴώ
+Δꙍ
+∫
+₁₂₃₄₅₆₇₈₉
+
+super_s = "ᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣʸᶻᵃᵇᶜᵈᵉᶠᵍʰᶦʲᵏˡᵐⁿᵒᵖ۹ʳˢᵗᵘᵛʷˣʸᶻ⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾"
+sub_s = "ₐ₈CDₑբGₕᵢⱼₖₗₘₙₒₚQᵣₛₜᵤᵥwₓᵧZₐ♭꜀ᑯₑբ₉ₕᵢⱼₖₗₘₙₒₚ૧ᵣₛₜᵤᵥwₓᵧ₂₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎"
+
+"""
+
+
+class LinearMotion(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    @staticmethod
+    def speed(total_distance, elapsed_time):
+        """Calculates average speed
+        s = d / t
+          = total_distance/elapsed_time
+        """
+        return total_distance / elapsed_time
+
+    @staticmethod
+    def velocity(initial_location, initial_time, final_location, final_time):
+        """Calculates average velocity
+            vₐ   = Δx/Δt = (x₂ - x₁) / (t₂ - t₁) = (x(t+Δt) - x(t)) / Δt
+                = (final_location - initial_location) ÷ (final_time - initial_time)
+                = (displacement) ÷ (time interval)
+
+        instantaneous velocity  v(t) = dx(t)/dt
+        instantaneous speed |v| = |dx/dt|
+        also, Δx = ∫ v dt  (area under velocity ᵥₛ time)
+        :return: average velocity
+        """
+        return (final_location - initial_location) / (final_time - initial_time)
+
+    @staticmethod
+    def acceleration(initial_velocity, initial_time, final_velocity, final_time):
+        """Calculates average acceleration
+            aₐ   = Δv/Δt = (v₂ - v₁) / (t₂ - t₁)
+                = (final_velocity - initial_velocity) ÷ (final_time - initial_time)
+                = (change in velocity) ÷ (time interval)
+
+        instantaneous acceleration  a(t) = dv(t)/dt
+        also, Δv = ∫ a dt  (area under velocity v/s time)
+        :return: average acceleration
+        """
+        return (final_velocity - initial_velocity) / (final_time - initial_time)
+
+    @staticmethod
+    def current_location(elapsed_time, **kwargs):
+        """Calculates current location/position
+        current_position x = x₀ + vt
+                           = (initial_position) + (average_velocity * elapsed_time)
+
+        If constant acceleration:
+        current_position x = ½at² + v₀t + x₀
+                           = (1/2 * constant_acceleration * (elapsed_time ** 2) + (initial_velocity * elapsed_time) + initial_location
+        """
+        initial_location = kwargs.get("initial_location", None)
+        average_velocity = kwargs.get("average_velocity", None)
+        if initial_location and average_velocity:
+            return initial_location / (average_velocity * elapsed_time)
+
+        initial_velocity = kwargs.get("initial_velocity", None)
+        constant_acceleration = kwargs.get("constant_acceleration", None)
+        if constant_acceleration and initial_velocity and initial_location:
+            return ((1 / 2 * constant_acceleration * (elapsed_time ** 2)) + (
+                        initial_velocity * elapsed_time) + initial_location)
