@@ -22,8 +22,22 @@ sub_s = "ₐ₈CDₑբGₕᵢⱼₖₗₘₙₒₚQᵣₛₜᵤᵥwₓᵧZₐ♭
 
 """
 
+__author__ = "Gahan Saraiya"
+
+import numpy
+
 
 class LinearMotion(object):
+    """Linear Motion is also considered as 1-D Kinematics
+
+    This is the case where a projectile motion,
+    i.e. falling of object, travelling of source to destination
+
+    The displacement of an object which looks to be in 2D space, but it can be interpreted as
+    1D space movement
+     Any impact henceforth on displacement of the complete object can be tracked
+     against function of displacement v/s elapsed time
+    """
     def __init__(self, *args, **kwargs):
         pass
 
