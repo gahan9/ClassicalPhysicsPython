@@ -2,6 +2,15 @@
 This file is created to demonstrate the various Classical Mechanics
 Kinematics calculations, concept and formulas.
 
+All the basic units for input should follow below standard:
+
+Measure   → Unit
+----------------
+length    → `m` meter
+time      → `s` seconds
+mass      → `gm` grams
+
+
 
 Convention:
 
@@ -184,7 +193,80 @@ class ProjectileMotion(LinearMotion):
 
 
 class CircularMotion(object):
-    def __init__(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        """
+        Notations:
+        Τ    → period (seconds to complete full circumference)
+        F    → frequency = (1/Τ)  [1/second  or Hz]
+        2π◦  → circumference in ◦radian
+        ω    → angular velocity = (2π/T)
+        v    → velocity = ((2π * r) / T) = ω * r
+        |a꜀|   → centripetal acceleration  = (v²/r) = (ω²r)
 
+        :param args:
+        :param kwargs:
+        """
+        self.circumference = 2 * np.pi
 
+    @staticmethod
+    def frequency(period):
+        """
+        :param period:  Τ    → period (seconds to complete full circumference)
+        :return: F    → frequency = (1/Τ)  [1/second  or Hz]
+        """
+        return 1/period
+
+    @staticmethod
+    def frequency_to_period(frequency):
+        """
+        :param frequency:
+        :return: Τ    → period (seconds to complete full circumference)
+        """
+        return 1/frequency
+
+    def angular_velocity(self, period=None, frequency=None):
+        """Angular velocity ω
+
+        :param period: Τ    → period (seconds to complete full circumference)
+        :param frequency: F    → frequency = (1/Τ)  [1/second  or Hz]
+        :return: ω    → angular velocity = (2π/T)
+                                        = circumference / period
+        """
+        if period:
+            return self.circumference / period
+        if frequency:
+            return self.circumference / self.frequency_to_period(frequency)
+
+    def velocity(self, radius, angular_velocity=None, period=None):
+        """
+        Velocity v = ((2π * r) / T) = ω * r
+                    = (circumference * radius) / period
+                    = angular_velocity * radius
+        :param radius: r
+        :param angular_velocity: ω
+        :param period: Τ
+        :return:
+        """
+        if angular_velocity:
+            return angular_velocity * radius
+        if period and not angular_velocity:
+            return self.angular_velocity(period=period) * radius
+
+    def centripetal_acceleration(self, radius, velocity=None, angular_velocity=None, period=None):
+        """
+        Centripetal acceleration
+        |a꜀| = (v²/r) = (ω²r)
+            = ((velocity * velocity) / radius)
+            = angular_velocity * angular_velocity * radius
+        :param radius: r
+        :param velocity: v
+        :param angular_velocity: ω
+        :param period: T
+        :return: |a꜀|
+        """
+        if velocity:
+            return (velocity ** 2) / radius
+        if angular_velocity:
+            return (angular_velocity ** 2) * radius
+        if period:
+            return (self.angular_velocity(period=period) ** 2) * radius
