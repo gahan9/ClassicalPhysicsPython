@@ -10,6 +10,7 @@ x = distance = displacement
 v = velocity
 a = acceleration
 t = time
+θ = Angle of projection
 
 Frequent use math characters:
 αβγεδθπμλωψφϴώ
@@ -24,7 +25,10 @@ sub_s = "ₐ₈CDₑբGₕᵢⱼₖₗₘₙₒₚQᵣₛₜᵤᵥwₓᵧZₐ♭
 
 __author__ = "Gahan Saraiya"
 
-import numpy
+import numpy as np
+
+
+RADIAN_TO_NUMBER = np.pi/180  # multiply any degree with this value to represent it as anumber to make calculaiton easier.
 
 
 def has_values(*args):
@@ -55,7 +59,7 @@ class LinearMotion(object):
         return total_distance / elapsed_time
 
     @staticmethod
-    def velocity(initial_location, initial_time, final_location, final_time):
+    def velocity(initial_location=None, initial_time=None, final_location=None, final_time=None, angle=None):
         """Calculates average velocity
             vₐ   = Δx/Δt = (x₂ - x₁) / (t₂ - t₁) = (x(t+Δt) - x(t)) / Δt
                 = (final_location - initial_location) ÷ (final_time - initial_time)
@@ -68,9 +72,11 @@ class LinearMotion(object):
         """
         if has_values(initial_location, initial_time, final_location, final_time):
             return (final_location - initial_location) / (final_time - initial_time)
+        if has_values(angle):
+            return np.tan(angle * RADIAN_TO_NUMBER)
 
     @staticmethod
-    def acceleration(initial_velocity, initial_time, final_velocity, final_time):
+    def acceleration(initial_velocity=None, initial_time=None, final_velocity=None, final_time=None, angle=None):
         """Calculates average acceleration
             aₐ   = Δv/Δt = (v₂ - v₁) / (t₂ - t₁)
                 = (final_velocity - initial_velocity) ÷ (final_time - initial_time)
@@ -80,7 +86,8 @@ class LinearMotion(object):
         also, Δv = ∫ a dt  (area under velocity v/s time)
         :return: average acceleration
         """
-        return (final_velocity - initial_velocity) / (final_time - initial_time)
+        if has_values(initial_velocity, initial_time, final_velocity, final_time):
+            return (final_velocity - initial_velocity) / (final_time - initial_time)
 
     @staticmethod
     def current_location(elapsed_time, **kwargs):
@@ -90,7 +97,8 @@ class LinearMotion(object):
 
         If constant acceleration:
         current_position x = ½at² + v₀t + x₀
-                           = (1/2 * constant_acceleration * (elapsed_time ** 2) + (initial_velocity * elapsed_time) + initial_location
+                           = [(1/2 * constant_acceleration * (elapsed_time ** 2)) + (
+                           initial_velocity * elapsed_time) + initial_location]
         """
         initial_location = kwargs.get("initial_location", None)
         average_velocity = kwargs.get("average_velocity", None)
@@ -102,3 +110,81 @@ class LinearMotion(object):
         if has_values(constant_acceleration, initial_velocity, initial_location):
             return ((1 / 2 * constant_acceleration * (elapsed_time ** 2)) + (
                         initial_velocity * elapsed_time) + initial_location)
+
+
+class ProjectileMotion(LinearMotion):
+    @staticmethod
+    def velocity_x(initial_velocity=None, angle=None):
+        """
+        Returns velocity on x-axis for projectile motion
+
+        velocity on x-axis
+            v₀ₓ = v₀cosθ
+                = initial_velocity * np.cos(angle * RADIAN_TO_NUMBER)
+        :return:
+        """
+        if has_values(initial_velocity, angle):
+            return initial_velocity * np.cos(angle * RADIAN_TO_NUMBER)
+
+    @staticmethod
+    def velocity_y(initial_velocity=None, angle=None, acceleration=None, elapsed_time=0):
+        """
+        Returns velocity on y-axis for projectile motion
+
+        velocity on y-axis
+            v₀ᵧ = at + v₀sinθ
+                = (acceleration * elapsed_time) + initial_velocity * np.sin(angle * RADIAN_TO_NUMBER)
+        :return:
+        """
+        if has_values(initial_velocity, angle):
+            result = initial_velocity * np.sin(angle * RADIAN_TO_NUMBER)
+            if elapsed_time and acceleration:
+                result += acceleration * elapsed_time
+            return result
+
+    def current_location_x(self, elapsed_time, **kwargs):
+        """
+        Calculates current position/location at current elapsed time
+        in projectile motion on x-axis
+
+        xₜ = v₀ₓ * t + xᵢ
+          = [velocity_x * elapsed_time] + initial_location
+          = [(v₀cosθ) * t] + xᵢ
+        :return:
+        """
+        initial_velocity = kwargs.get("initial_velocity", None)  # v₀ₓ
+        angle = kwargs.get("angle", None)  # θ
+        velocity_x = kwargs.get("velocity_x", None)  # v₀ₓ
+        initial_location = kwargs.get("initial_location", 0)  # xᵢ
+        if has_values(velocity_x):
+            return (velocity_x * elapsed_time) + initial_location
+        if has_values(initial_velocity, angle):
+            return (self.velocity_x(initial_velocity, angle) * elapsed_time) + initial_location
+
+    def current_location_y(self, elapsed_time, **kwargs):
+        """
+        Calculates current position/location at current elapsed time
+        in projectile motion on y-axis
+
+            yₜ = ½at² + v₀ᵧ * t + yᵢ
+              = (1/2 * acceleration * elapsed_time * elapsed_time) + (velocity_y * elapsed_time) + initial_location
+              = ½at² + (v₀sinθ * t) + yᵢ
+        :return:
+        """
+        angle = kwargs.get("angle", None)  # θ
+        acceleration = kwargs.get("acceleration", None)  # a
+        velocity_y = kwargs.get("velocity_y", None)  # v₀ᵧ
+        initial_location = kwargs.get("initial_location", 0)  # yᵢ
+        initial_velocity = kwargs.get("initial_velocity", None)  # v₀ₓ
+        if has_values(acceleration, velocity_y, initial_location):
+            return (1/2 * acceleration * elapsed_time * elapsed_time) + (velocity_y * elapsed_time) + initial_location
+        if has_values(acceleration, initial_velocity, angle):
+            return (1 / 2 * acceleration * elapsed_time * elapsed_time) + (
+                        self.velocity_y(initial_velocity, angle) * elapsed_time) + initial_location
+
+
+class CircularMotion(object):
+    def __init__(self):
+        pass
+
+
